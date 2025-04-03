@@ -34,8 +34,8 @@ void Controller::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg
     auto cmd = geometry_msgs::msg::Twist();
 
     int total_ranges = msg->ranges.size();
-    int front_start = total_ranges / 360 * 20;
-    int front_end = total_ranges - total_ranges / 360 * 20;
+    int front_start = total_ranges / 360 * 30;
+    int front_end = total_ranges - total_ranges / 360 * 30;
     int left_start = total_ranges / 4 - (total_ranges / 360 * 40);
     int left_end = total_ranges / 4 + (total_ranges / 360 * 40);
     int right_start = (total_ranges / 4 * 3) - (total_ranges / 360 * 40);
@@ -97,7 +97,7 @@ void Controller::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg
     switch (current_state_) {
         case State::BUSCAR_PARED:
             RCLCPP_INFO(this->get_logger(), "Estado: BUSCAR_PARED");
-            if (( min_front < umbral_pared_min_ ) && ( max_front > umbral_pared_max_ )) {
+            if (( min_front < umbral_pared_min_ ) && ( max_front > (umbral_pared_min_ + 0.2))) {
                 current_state_ = State::EVITAR_OBSTACULO;
             } else if (( min_left < (distancia_pared_deseada_ + 0.1 )) && ( max_left > (distancia_pared_deseada_ + 0.1 ))) {
                 current_state_ = State::SEGUIR_PARED;
@@ -127,15 +127,15 @@ void Controller::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg
                 cmd.linear.x = 0.0;
                 cmd.angular.z = -0.3;
                 }
-            else if (min_front < umbral_pared_min_) {
+            else if ( min_front < umbral_pared_min_ ) {
                 current_state_ = State::EVITAR_OBSTACULO;
             } 
             else if (min_left < (distancia_pared_deseada_ - 0.1)) {
-                cmd.linear.x = 0.1;
+                cmd.linear.x = 0.2;
                 cmd.angular.z = -0.3;
             } 
             else if (min_left > (distancia_pared_deseada_ + 0.1)) {
-                cmd.linear.x = 0.1;
+                cmd.linear.x = 0.2;
                 cmd.angular.z = 0.3;
             }
 
@@ -148,7 +148,7 @@ void Controller::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg
             RCLCPP_INFO(this->get_logger(), "Estado: EVITAR_OBSTACULO");
             cmd.linear.x = 0.0;
             cmd.angular.z = -0.2;
-            if ((min_front > umbral_pared_max_) && (max_front > umbral_pared_max_)) {
+            if ((min_front > umbral_pared_min_) && (max_front > umbral_pared_max_)) {
                 current_state_ = State::BUSCAR_PARED;
             }
             break;

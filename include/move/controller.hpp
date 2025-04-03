@@ -44,10 +44,10 @@ private:
 
     State current_state_ = State::BUSCAR_PARED;
 
-    float distancia_pared_deseada_ = 1.0;  // Distancia deseada a la pared (en metros)
-    float umbral_pared_min_ = 1.0;
+    float distancia_pared_deseada_ = 0.5;  // Distancia deseada a la pared (en metros)
+    float umbral_pared_min_ = 0.5;
             // Umbral para detectar un obstáculo
-    float umbral_pared_max_ = 1.15;        // Si la distancia a la pared es mayor a este valor, buscar pared
+    float umbral_pared_max_ = 1.00;        // Si la distancia a la pared es mayor a este valor, buscar pared
     bool pared = false;
     bool obstaculo = false;
     void update_movement(float left, float front, geometry_msgs::msg::Twist &cmd);
